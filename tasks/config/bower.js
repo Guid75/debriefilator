@@ -1,23 +1,25 @@
 /**
- * Get bower packages
+ * Install bower components.
  *
  * ---------------------------------------------------------------
  *
- * This grunt task is configured to apply bower to the sails project
+ * Installs bower components and copies the required files into the assets folder structure.
  *
  */
+
 module.exports = function(grunt) {
+
 	grunt.config.set('bower', {
 		install: {
 			options: {
-                targetDir: './assets/js/dependencies',
-                layout: 'byType',
-                install: true,
-                verbose: false,
-                cleanTargetDir: false,
-                cleanBowerDir: true,
-                bowerOptions: {}
-            }
+				targetDir: './assets/vendor',
+				layout: 'byType',
+				install: true,
+				verbose: false,
+				cleanTargetDir: true,
+				cleanBowerDir: true,
+				bowerOptions: {}
+			}
 		}
 	});
 
