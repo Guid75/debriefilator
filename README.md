@@ -1,3 +1,13 @@
 # debriefilator
 
-a [Sails](http://sailsjs.org) application
+A simple SCRUM retrospective tool
+
+Install
+=======
+
+```
+npm install
+bower install
+```
+
+to start a server juste launch ```sails lift```
