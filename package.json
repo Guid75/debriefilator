@@ -33,5 +33,8 @@
     "url": "git://github.com/guillaume/debriefilator.git"
   },
   "author": "guillaume",
-  "license": ""
+  "license": "",
+  "devDependencies": {
+    "grunt-bower-task": "^0.4.0"
+  }
 }
