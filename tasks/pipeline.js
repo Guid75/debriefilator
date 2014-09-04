@@ -8,8 +8,6 @@
  * for matching multiple files.)
  */
 
-
-
 // CSS files to inject in order
 //
 // (if you're using LESS with the built-in default config, you'll want
@@ -19,21 +17,23 @@ var cssFilesToInject = [
   'styles/**/*.css'
 ];
 
-
 // Client-side javascript files to inject in order
 // (uses Grunt-style wildcard/glob/splat expressions)
 var jsFilesToInject = [
-  'vendor/**/*.js',
+	// must be in first position
+	'vendor/angular/angular.js',
 
-  // Load sails.io before everything else
-  'js/dependencies/sails.io.js',
+	'vendor/**/*.js',
 
-  // Dependencies like jQuery, or Angular are brought in here
-//  'js/dependencies/**/*.js',
+	// Load sails.io before everything else
+	'js/dependencies/sails.io.js',
 
-  // All of the rest of your client-side js files
-  // will be injected here in no particular order.
-  'js/**/*.js'
+	// must be in first position into all other js
+	'js/app.js',
+
+	// All of the rest of your client-side js files
+	// will be injected here in no particular order.
+	'js/**/*.js'
 ];
 
 
@@ -49,7 +49,6 @@ var jsFilesToInject = [
 var templateFilesToInject = [
   'templates/**/*.html'
 ];
-
 
 
 // Prefix relative paths to source files so they point to the proper locations

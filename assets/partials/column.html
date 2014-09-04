@@ -1,0 +1,15 @@
+<div class="postits-area" ng-style="{'background-color':
+									column.color}">
+  <div class="background-area">
+	<div class="background-area-table">
+	  <div class="background-text" style="color: {{column.color | luminance:-0.15 }}">
+		<h1>{{column.name}} ({{notesScope}})</h1>
+	  </div>
+	</div>
+  </div>
+  <div class="postits-board" drop drop-data="{{column.name}}/{{notesScope}}">
+	<div ng-repeat="note in notes(column.name) | filter:search"
+		 ng-include="'partials/note.html'" class="repeated-item" >
+	</div>
+  </div>
+</div>

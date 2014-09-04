@@ -1,0 +1,240 @@
+html, body {
+	height: 100%;
+}
+
+body {
+	background-color: #EEE;
+	padding-top: 50px;
+}
+
+.main-area {
+	height: 100%;
+	width: 100%;
+}
+
+.session {
+	height: 100%;
+}
+
+.columns-wrapper {
+	height: 100%;
+	position: relative;
+}
+
+.postits-columns {
+	height: 100%;
+	padding-right: 400px;
+}
+
+.session-info {
+	position: fixed;
+	right: 0px;
+	top: 50px;
+	width: 400px;
+	height: 100%;
+	border-color: #000;
+	box-shadow: -2px 0px 2px 0px #999999;
+	padding: 5px;
+}
+
+.notes-column {
+	width: 50%;
+	height: 100%;
+	float: left;
+	position: relative;
+}
+
+.background-area {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	overflow: hidden;
+}
+
+.background-area-table {
+	height: 100%;
+	width: 100%;
+	display: table;
+	overflow: hidden;
+}
+
+.background-area-table .background-text {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+	color: #DBB;
+	user-select: none;
+	cursor: default;
+}
+
+note-layout {
+	display: block;
+	position: relative;
+}
+
+.public-private {
+	height: 100%;
+	position: relative;
+}
+
+.postits-header {
+	height: 45px;
+	line-height: 45px;
+	background-color: #FFF;
+	width: 100%;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	overflow: hidden;
+	box-shadow: 0px 2px 2px #999999;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.postits-area {
+	height: 100%;
+	position: relative;
+	overflow: auto;
+	padding-top: 45px;
+}
+
+.postits-board {
+	height: 100%;
+	overflow: auto;
+	position: relative;
+}
+
+/* Customize container */
+@media (min-width: 768px) {
+  .container {
+    max-width: 730px;
+  }
+}
+.container-narrow > hr {
+  margin: 30px 0;
+}
+
+/* Responsive: Portrait tablets and up */
+@media screen and (min-width: 768px) {
+  /* Remove the padding we set earlier */
+  .header,
+  .marketing,
+  .footer {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  /* Space out the masthead */
+  .header {
+    margin-bottom: 30px;
+  }
+}
+
+.postit {
+	border: 1px solid gray;
+	width: 150px;
+	height: 120px;
+	padding: 4px;
+	font-size: 85%;
+	background: #FFFC7F;
+	box-shadow: 2px 2px 2px #999999;
+	float: left;
+	margin: 5px;
+	position: relative;
+	border-radius: 4px;
+}
+
+.note-label {
+	transition: all linear 0.2s;
+}
+
+.note-label.ng-hide {
+	opacity: 0;
+}
+
+.postit-dragged {
+	border: 1px solid black;
+}
+
+.column-dropped {
+	background-color: red;
+}
+
+.postit-toolbar {
+	font-weight: bold;
+	height: 20px;
+}
+
+.postit-delete {
+	cursor: pointer;
+    font-size: 120%;
+	float: right;
+}
+
+.postit-score {
+    font-size: 100%;
+	float: left;
+}
+
+.postit-increment {
+	cursor: pointer;
+    font-size: 100%;
+	float: left;
+}
+
+.postit-editable {
+	cursor: pointer;
+    height: 70px;
+    overflow: auto;
+    position: relative;
+    width: 100%;
+	margin-bottom: 3px;
+}
+
+.postits-filter-zone {
+	float: right;
+	top: 6px;
+	vertical-align: middle;
+	width: 250px;
+}
+
+.postits-filter {
+/*	width: 450px;*/
+}
+
+/*
+  We're using CSS transitions for when
+  the enter and move events are triggered
+  for the element that has the .repeated-item
+  class
+*/
+.repeated-item.ng-enter, .repeated-item.ng-move {
+	transition: 0.5s linear all;
+	opacity: 0;
+}
+
+/*
+ The ng-enter-active and ng-move-active
+ are where the transition destination properties
+ are set so that the animation knows what to
+ animate.
+*/
+.repeated-item.ng-enter.ng-enter-active,
+.repeated-item.ng-move.ng-move-active {
+	opacity: 1;
+}
+
+/*
+  We're using CSS keyframe animations for when
+  the leave event is triggered for the element
+  that has the .repeated-item class
+*/
+.repeated-item.ng-leave {
+	animation: 0.5s my_animation;
+}
+
+@keyframes my_animation {
+	from { opacity:1; }
+	to { opacity:0; }
+}
