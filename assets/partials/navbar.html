@@ -17,7 +17,10 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Sessions <span class="caret"></span></a>
           <ul class="dropdown-menu" role="menu" ng-controller="SessionsCtrl">
             <li><a href="#" ng-click="newRetro()">New session</a></li>
-            <li><a href="#" ng-click="joinRetro()">Join an existing session</a></li>
+            <li><a href="#" ng-click="joinRetro()">Join an existing
+                session</a></li>
+            <li role="presentation" class="divider"></li>
+            <li ng-repeat="retro in retros"><a href="#">{{ retro.name || "&lt;unamed&gt;" }}</a></li>
           </ul>
         </li>
       </ul>

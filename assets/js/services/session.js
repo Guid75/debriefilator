@@ -11,11 +11,11 @@ app.factory('Session', function ($http) {
 	var session;
 	// Public API here
 	return {
-		current: function() {
+		current: function () {
 			return session;
 		},
 
-		initCurrent: function(id, sessionCfg) {
+		initCurrent: function (id, sessionCfg) {
 			session = {
 				id: id,
 				name: sessionCfg.name,
@@ -29,12 +29,12 @@ app.factory('Session', function ($http) {
 			return this.current().username;
 		},
 
-		join: function(session) {
+		join: function (session) {
 			return $http({
 				method: 'GET',
 				url: '/api/session/' + session.sessionName
 				// TODO add a pool of users for the joining site
-			}).then(function(result) {
+			}).then(function (result) {
 				this.initCurrent(session.sessionName, {
 					userName: session.userName,
 					name: result.data.session.name,
@@ -44,7 +44,16 @@ app.factory('Session', function ($http) {
 			}.bind(this));
 		},
 
-		add: function(sessionCfg) {
+    list: function () {
+      return $http({
+        method: 'GET',
+        url: '/retro'
+      }).then(function (result) {
+        return result.data;
+      });
+    },
+
+		add: function (sessionCfg) {
 			return $http({
 				method: 'POST',
 				url: '/retro/create',
@@ -52,17 +61,18 @@ app.factory('Session', function ($http) {
 					name: sessionCfg.sessionName,
 					layout: sessionCfg.layout
 				}
-			}).then(function(result) {
+			}).then(function (result) {
 				this.initCurrent(result.data.id, sessionCfg);
 				return session;
 			}.bind(this));
 		},
-		delete: function(name) {
+
+		delete: function (id) {
 			return $http({
 				method: 'DELETE',
-				url: '/api/session',
+				url: '/retro',
 				data: {
-					name: name
+					id: id
 				}
 			});
 		}

@@ -9,6 +9,11 @@
  */
 app.controller('SessionsCtrl', function ($scope, $modal, $state, Session, Note) {
 	$scope.Session = Session;
+
+  Session.list().then(function(retros) {
+    $scope.retros = retros;
+  });
+
 	$scope.newRetro = function() {
 		var modalInstance = $modal.open({
 			templateUrl: 'partials/newretro.html',
@@ -70,4 +75,3 @@ app.controller('SessionsCtrl', function ($scope, $modal, $state, Session, Note) 
 		});
 	};
 });
-
