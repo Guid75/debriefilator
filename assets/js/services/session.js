@@ -59,7 +59,7 @@ app.factory('Session', function ($http) {
 		},
 		delete: function(name) {
 			return $http({
-				method: 'delete',
+				method: 'DELETE',
 				url: '/api/session',
 				data: {
 					name: name
