@@ -15,14 +15,14 @@ app.factory('Session', function ($http) {
 			return session;
 		},
 
-		initCurrent: function(sessionId, sessionCfg) {
+		initCurrent: function(id, sessionCfg) {
 			session = {
-				id: sessionId,
+				id: id,
 				name: sessionCfg.name,
 				layout: sessionCfg.layout,
 				notes: sessionCfg.notes
 			};
-			session.username = sessionCfg.userName ? sessionCfg.userName :'Jon Doe';
+			session.username = sessionCfg.userName ? sessionCfg.userName :'John Doe';
 		},
 
 		getUserName: function () {
@@ -53,7 +53,7 @@ app.factory('Session', function ($http) {
 					layout: sessionCfg.layout
 				}
 			}).then(function(result) {
-				this.initCurrent(result.data.sessionId, sessionCfg);
+				this.initCurrent(result.data.id, sessionCfg);
 				return session;
 			}.bind(this));
 		},
