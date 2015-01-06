@@ -14,10 +14,15 @@ app.controller('SessionCtrl', function ($scope, Note, Session) {
 	$scope.messages = ['welcome to the chat'];
 
 	$scope.session = Session.current();
-	$scope.getWidthStyle = function() {
-		console.log('getWidthStyle() called');
-		return (100 / $scope.layout.length) + '%';
-	};
+	// $scope.getWidthStyle = function() {
+	// 	console.log('getWidthStyle() called');
+	// 	return (100 / $scope.layout.length) + '%';
+	// };
+	// $scope.getWidthStyle = function() {
+	// 	console.log('getWidthStyle() called');
+	// 	return "{ width: '" + (100 / $scope.layout.length) + "%' }";
+	// };
+  $scope.getWidthStyle = "{ width: '33%'; }";
 	$scope.nextStep = function() {
 		$scope.stepNo++;
 	};

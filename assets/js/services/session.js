@@ -47,7 +47,7 @@ app.factory('Session', function ($http) {
 		add: function(sessionCfg) {
 			return $http({
 				method: 'POST',
-				url: '/api/session/new',
+				url: '/retro/create',
 				data: {
 					name: sessionCfg.sessionName,
 					layout: sessionCfg.layout

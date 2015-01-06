@@ -9,9 +9,9 @@
  */
 app.controller('SessionsCtrl', function ($scope, $modal, $state, Session, Note) {
 	$scope.Session = Session;
-	$scope.newSession = function() {
+	$scope.newRetro = function() {
 		var modalInstance = $modal.open({
-			templateUrl: 'partials/newsession.html',
+			templateUrl: 'partials/newretro.html',
 			controller: ['$scope', 'NotesLayout', function($scope, NotesLayout) {
 				$scope.layouts = NotesLayout.all();
 				$scope.session = {
@@ -41,9 +41,9 @@ app.controller('SessionsCtrl', function ($scope, $modal, $state, Session, Note) 
 		});
 	};
 
-	$scope.joinSession = function() {
+	$scope.joinRetro = function() {
 		var modalInstance = $modal.open({
-			templateUrl: 'partials/joinsession.html',
+			templateUrl: 'partials/joinretro.html',
 			controller: function($scope) {
 				$scope.session = {
 					sessionName: '',

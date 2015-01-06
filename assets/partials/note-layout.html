@@ -5,10 +5,11 @@
 	<!-- 	 style="width: {{$parent.getWidthStyle()}};" -->
 	<!-- 	 postit-type="{{column.name}}"> -->
 	<!-- </div> -->
+	<!-- ng-style="{ width: '$parent.getWidthStyle()' }" -->
 	<div ng-repeat="column in $parent.layout"
-		 ng-include="'partials/column.html'" class="notes-column"
-		 ng-style="{ 'width': '$parent.getWidthStyle()' }"
-		 postit-type="{{column.name}}">
+		   ng-include="'partials/column.html'" class="notes-column"
+		   ng-style="getWidthStyle()"
+		   postit-type="{{column.name}}">
 	</div>
 	<div class="postits-header" >
 	  <div class="btn-group btn-group-sm">

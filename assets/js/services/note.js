@@ -43,7 +43,7 @@ app.factory('Note', function ($q, $http, Session, uuid4) {
 		return -1;
 	}
 
-    return {
+  return {
 		init: function() {
 			curLayout = Session.current().layout;
 			// clear private notes
@@ -133,7 +133,7 @@ app.factory('Note', function ($q, $http, Session, uuid4) {
 					method: 'POST',
 					url: 'api/session/' + Session.current().id + '/note/remove/' + note.id
 				}).then(function(// result
-								) {
+				) {
 					items[column].splice(index, 1);
 				});
 			} else {
@@ -145,5 +145,5 @@ app.factory('Note', function ($q, $http, Session, uuid4) {
 			// TODO check the parameters validity
 			return items[column];
 		}
-    };
+  };
 });

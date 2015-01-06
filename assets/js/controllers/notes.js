@@ -8,7 +8,11 @@
  * Controller of the debriefilatorApp
  */
 app.controller('NotesCtrl', function ($scope, $rootScope, Note) {
-	$scope.notes = function(column) {
+	$scope.getWidthStyle = function() {
+		return { width: (100 / $scope.$parent.layout.length) + "%" };
+	};
+
+  $scope.notes = function(column) {
 		return Note.list(column, $scope.notesScope);
 	};
 
