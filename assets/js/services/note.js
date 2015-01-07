@@ -16,39 +16,53 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
   $rootScope.$watch(function () {
     return privateItems;
   }, function (newItems, oldItems) {
+    // get all modifications
+
+
     // console.log(newItems);
     // console.log(oldItems);
   }, true);
 
+  // gives a column and an index for a note
+  function getNoteLocation(noteId, scope) {
+    var
+    notes,
+		items = scope === 'public' ? publicItems : privateItems;
+
+		for (var column in items) {
+			notes = items[column];
+			for (var i = 0; i < notes.length; i++) {
+				if (notes[i].id === noteId) {
+          return {
+            column: column,
+            index: i
+          };
+				}
+			}
+		}
+    return null;
+  }
+
 	function getNote(noteId, scope) {
-		var items = scope === 'public' ? publicItems : privateItems;
+		var
+    items = scope === 'public' ? publicItems : privateItems,
+    location = getNoteLocation(noteId, scope);
 
-		for (var column in items) {
-			var columnNotes = items[column];
-			for (var i = 0; i < columnNotes.length; i++) {
-				var note = columnNotes[i];
-				if (note.id === noteId) {
-					return note;
-				}
-			}
-		}
-		return null;
+    return (location ? items[location.column][location.index] : null);
 	}
 
-	function getNoteIndex(noteId, scope) {
-		var items = scope === 'public' ? publicItems : privateItems;
+  // remove the note in internal structures
+  function removeNote(noteId, scope) {
+    var
+		items = scope === 'public' ? publicItems : privateItems,
+    location = getNoteLocation(noteId, scope);
 
-		for (var column in items) {
-			var columnNotes = items[column];
-			for (var i = 0; i < columnNotes.length; i++) {
-				var note = columnNotes[i];
-				if (note.id === noteId) {
-					return i;
-				}
-			}
-		}
-		return -1;
-	}
+    if (!location) {
+      throw new Error('Note not found');
+    }
+
+    items[location.column].splice(location.index, 1);
+  }
 
   return {
 		init: function () {
@@ -102,6 +116,10 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
             retro: Session.current().id
 					}
 				}).then(function(result) {
+          if (!items[column]) {
+            // first note of the column
+            items[column] = [];
+          }
 					items[column].push({
 						text: text,
 						score: score,
@@ -121,36 +139,34 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 				resolve(id);
 			});
 		},
-		incrementScore: function(column, noteId, scope) {
+		incrementScore: function(noteId, scope) {
 			var note = getNote(noteId, scope);
 			note.score++;
 		},
-		decrementScore: function(column, noteId, scope) {
+		decrementScore: function(noteId, scope) {
 			var note = getNote(noteId, scope);
 			if (note.score > 1) {
 				note.score--;
 			}
 		},
-		delete: function(column, noteId, scope) {
+		delete: function(noteId, scope) {
 			var
-      items = scope === 'public' ? publicItems : privateItems,
-			index = getNoteIndex(noteId, scope);
+			note = getNote(noteId, scope);
 
-			if (index < 0) {
-				// TODO raise an error
-				return;
+			if (!note) {
+        throw new Error('Trying to delete an unknown note');
 			}
+
 			// TODO check the parameters validity
 			if (scope === 'public') {
-				var note = items[column][index];
 				$http({
 					method: 'DELETE',
           url: '/note/' + note.id
 				}).then(function() {
-					items[column].splice(index, 1);
+          removeNote(noteId, scope);
 				});
 			} else {
-				items[column].splice(index, 1);
+        removeNote(noteId, scope);
 			}
 		},
 		list: function(column, scope) {

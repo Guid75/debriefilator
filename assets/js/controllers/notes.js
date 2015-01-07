@@ -29,16 +29,16 @@ app.controller('NotesCtrl', function ($scope, $rootScope, Note) {
 		});
 	};
 
-	$scope.deleteNote = function(column, noteId) {
-		Note.delete(column, noteId, $scope.notesScope);
+	$scope.deleteNote = function(noteId) {
+		Note.delete(noteId, $scope.notesScope);
 	};
 
-	$scope.incrementScore = function(column, noteId) {
-		Note.incrementScore(column, noteId, $scope.notesScope);
+	$scope.incrementScore = function(noteId) {
+		Note.incrementScore(noteId, $scope.notesScope);
 	};
 
-	$scope.decrementScore = function(column, noteId) {
-		Note.decrementScore(column, noteId, $scope.notesScope);
+	$scope.decrementScore = function(noteId) {
+		Note.decrementScore(noteId, $scope.notesScope);
 	};
 
 	$scope.$on('dropEvent', function(evt, dragged, dropped) {
