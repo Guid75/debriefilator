@@ -132,8 +132,10 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 			}
 		},
 		delete: function(column, noteId, scope) {
-			var items = scope === 'public' ? publicItems : privateItems;
-			var index = getNoteIndex(noteId, scope);
+			var
+      items = scope === 'public' ? publicItems : privateItems,
+			index = getNoteIndex(noteId, scope);
+
 			if (index < 0) {
 				// TODO raise an error
 				return;
@@ -142,10 +144,9 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 			if (scope === 'public') {
 				var note = items[column][index];
 				$http({
-					method: 'POST',
-					url: 'api/session/' + Session.current().id + '/note/remove/' + note.id
-				}).then(function(// result
-				) {
+					method: 'DELETE',
+          url: '/note/' + note.id
+				}).then(function() {
 					items[column].splice(index, 1);
 				});
 			} else {
