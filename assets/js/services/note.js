@@ -7,11 +7,18 @@
  * # note
  * Factory in the debriefilatorApp.
  */
-app.factory('Note', function ($q, $http, Session, uuid4) {
+app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 	var
 	privateItems = {},
 	publicItems = {},
 	curLayout;
+
+  $rootScope.$watch(function () {
+    return privateItems;
+  }, function (newItems, oldItems) {
+    // console.log(newItems);
+    // console.log(oldItems);
+  }, true);
 
 	function getNote(noteId, scope) {
 		var items = scope === 'public' ? publicItems : privateItems;
@@ -84,19 +91,21 @@ app.factory('Note', function ($q, $http, Session, uuid4) {
 			if (scope === 'public') {
 				return $http({
 					method: 'POST',
-					url: 'api/session/' + Session.current().id + '/note/new',
+          url: '/note/create',
 					data: {
 						text: text,
 						score: score,
-						column: column
+						column: column,
+            retro: Session.current().id
 					}
 				}).then(function(result) {
 					items[column].push({
 						text: text,
 						score: score,
-						id: result.data.noteId
+            column: column,
+						id: result.data.id
 					});
-					return result.data.noteId;
+					return result.data.id;
 				});
 			}
 			return $q(function(resolve) {

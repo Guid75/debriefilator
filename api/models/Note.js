@@ -14,9 +14,12 @@ module.exports = {
 			type: 'integer',
 			defaultsTo: 0
 		},
-        owner: {
-            model: 'retro'
-        }
+    column: {
+      type: 'string'
+    },
+    retro: {
+      model: 'retro',
+      required: true
     }
+  }
 };
-

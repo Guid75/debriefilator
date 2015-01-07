@@ -12,8 +12,7 @@ module.exports = {
 		},
 		notes: {
 			collection: 'note',
-			via: 'owner'
+			via: 'retro'
 		}
 	}
 };
-
