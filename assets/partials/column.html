@@ -1,4 +1,4 @@
-<div class="postits-area" ng-style="{'background-color':
+<div class="postits-area" ng-controller="ColumnController" ng-style="{'background-color':
 									column.color}">
   <div class="background-area">
 	<div class="background-area-table">
@@ -8,7 +8,7 @@
 	</div>
   </div>
   <div class="postits-board" drop drop-data="{{column.name}}/{{notesScope}}">
-	<div ng-repeat="note in notes(column.name) | filter:search"
+	<div ng-repeat="note in notes() | filter:{ column: column.name } | filter:search"
 		 ng-include="'partials/note.html'" class="repeated-item" >
 	</div>
   </div>

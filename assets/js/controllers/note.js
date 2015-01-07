@@ -20,7 +20,7 @@ app.controller('NoteController', function ($scope, $timeout, Note) {
 	$scope.textChanged = function () {
 		switch ($scope.notesScope) {
 		case 'private':
-			$scope.note.text = $scope.text;
+			$scope.setText($scope.note.id, $scope.text);
 			break;
 		case 'public':
 			if (changePromise) {
@@ -28,7 +28,7 @@ app.controller('NoteController', function ($scope, $timeout, Note) {
 			}
 			changePromise = $timeout(applyText, 1000);
 			changePromise.then(function (v) {
-				$scope.note.text = $scope.text;
+				$scope.setText($scope.note.id, $scope.text);
 			});
 			break;
 		default:

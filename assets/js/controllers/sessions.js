@@ -10,9 +10,9 @@
 app.controller('SessionsCtrl', function ($scope, $modal, $state, Session, Note) {
 	$scope.Session = Session;
 
-  Session.list().then(function(retros) {
-    $scope.retros = retros;
-  });
+	Session.list().then(function(retros) {
+		$scope.retros = retros;
+	});
 
 	$scope.newRetro = function() {
 		var modalInstance = $modal.open({
@@ -64,22 +64,22 @@ app.controller('SessionsCtrl', function ($scope, $modal, $state, Session, Note) 
 			}
 		});
 
-    modalInstance.result.then(function (sessionCfg) {
+		modalInstance.result.then(function (sessionCfg) {
 			Session.join(sessionCfg)
-			  .then(function() {
-				  Note.init();
-				  $state.transitionTo('session', sessionCfg.sessionName, { reload: true });
-			  }, function() {
-				  // TODO: display an error
-			  });
+				.then(function() {
+					Note.init();
+					$state.transitionTo('session', sessionCfg.sessionName, { reload: true });
+				}, function() {
+					// TODO: display an error
+				});
 		});
 	};
 
-  $scope.joinRetroById = function (id) {
-    Session.join(id)
-      .then(function (session) {
+	$scope.joinRetroById = function (id) {
+		Session.join(id)
+			.then(function (session) {
 				Note.init();
 				$state.transitionTo('session', { sessionid: session.id }, { reload: true });
-      });
-  };
+			});
+	};
 });

@@ -12,21 +12,21 @@ app.controller('NotesCtrl', function ($scope, $rootScope, Note) {
 		return { width: (100 / $scope.$parent.layout.length) + "%" };
 	};
 
-  $scope.notes = function(column) {
-		return Note.list(column, $scope.notesScope);
+	$scope.notes = function() {
+		return Note.list($scope.notesScope);
 	};
 
 	$scope.addNote = function(column) {
-    Note.add(column, 'Enter your remark here', 1, $scope.notesScope)
-    .then(function(noteId) {
-			$scope.notes(column).some(function(note) {
-				if (note.id === noteId) {
-					note.focusMe = 'true';
-					return true;
-				}
-				return false;
+		Note.add(column, 'Enter your remark here', $scope.notesScope)
+			.then(function(noteId) {
+				$scope.notes().some(function(note) {
+					if (note.id === noteId) {
+						note.focusMe = 'true';
+						return true;
+					}
+					return false;
+				});
 			});
-		});
 	};
 
 	$scope.deleteNote = function(noteId) {
@@ -39,6 +39,10 @@ app.controller('NotesCtrl', function ($scope, $rootScope, Note) {
 
 	$scope.decrementScore = function(noteId) {
 		Note.decrementScore(noteId, $scope.notesScope);
+	};
+
+	$scope.setText = function (noteId, text) {
+		Note.setText(noteId, $scope.notesScope, text);
 	};
 
 	$scope.$on('dropEvent', function(evt, dragged, dropped) {
@@ -57,7 +61,7 @@ app.controller('NotesCtrl', function ($scope, $rootScope, Note) {
 				 Note.getNoteText(dragId, dragScope),
 				 Note.getNoteScore(dragId, dragScope),
 				 dropScope);
-		Note.delete(dragColumn, dragId, dragScope);
+		Note.delete(dragId, dragScope);
         $scope.$apply();
     });
 });

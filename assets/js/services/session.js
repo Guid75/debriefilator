@@ -35,25 +35,25 @@ app.factory('Session', function ($http) {
 				url: '/retro/' + id
 				// TODO add a pool of users for the joining site
 			}).then(function (result) {
-        var retro = result.data;
+				var retro = result.data;
 				this.initCurrent(retro.id, {
 					userName: retro.userName,
 					name: retro.name,
 					layout: retro.layout,
 					notes: retro.notes
 				});
-        return session;
+				return session;
 			}.bind(this));
 		},
 
-    list: function () {
-      return $http({
-        method: 'GET',
-        url: '/retro'
-      }).then(function (result) {
-        return result.data;
-      });
-    },
+		list: function () {
+			return $http({
+				method: 'GET',
+				url: '/retro'
+			}).then(function (result) {
+				return result.data;
+			});
+		},
 
 		add: function (sessionCfg) {
 			return $http({

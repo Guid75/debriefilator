@@ -9,83 +9,67 @@
  */
 app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 	var
-	privateItems = {},
-	publicItems = {},
+	privateNotes,
+	publicNotes,
 	curLayout;
 
-  $rootScope.$watch(function () {
-    return privateItems;
-  }, function (newItems, oldItems) {
-    // get all modifications
+	// $rootScope.$watch(function () {
+	//   return privateItems;
+	// }, function (newItems, oldItems) {
+	//   // get all modifications
 
 
-    // console.log(newItems);
-    // console.log(oldItems);
-  }, true);
+	//   // console.log(newItems);
+	//   // console.log(oldItems);
+	// }, true);
 
-  // gives a column and an index for a note
-  function getNoteLocation(noteId, scope) {
-    var
-    notes,
-		items = scope === 'public' ? publicItems : privateItems;
+	io.socket.on('note', function (obj) {
+//		console.log(obj);
+	});
 
-		for (var column in items) {
-			notes = items[column];
-			for (var i = 0; i < notes.length; i++) {
-				if (notes[i].id === noteId) {
-          return {
-            column: column,
-            index: i
-          };
-				}
+	function getNoteIndex(noteId, scope) {
+		var
+		i,
+		notes = (scope === 'public' ? publicNotes : privateNotes);
+
+		for (i = 0; i < notes.length; i++) {
+			if (notes[i].id == noteId) {
+				return i;
 			}
 		}
-    return null;
-  }
+		return -1;
+	}
 
 	function getNote(noteId, scope) {
 		var
-    items = scope === 'public' ? publicItems : privateItems,
-    location = getNoteLocation(noteId, scope);
+		notes = (scope === 'public' ? publicNotes : privateNotes),
+		index = getNoteIndex(noteId, scope);
 
-    return (location ? items[location.column][location.index] : null);
+		return (index >= 0 ? notes[getNoteIndex(noteId, scope)] : null);
 	}
 
-  // remove the note in internal structures
-  function removeNote(noteId, scope) {
-    var
-		items = scope === 'public' ? publicItems : privateItems,
-    location = getNoteLocation(noteId, scope);
+	// remove the note in internal structures
+	function removeNote(noteId, scope) {
+		var
+		items = scope === 'public' ? publicNotes : privateNotes,
+		index = getNoteIndex(noteId, scope);
 
-    if (!location) {
-      throw new Error('Note not found');
-    }
+		if (index < 0) {
+			throw new Error('Note not found');
+		}
 
-    items[location.column].splice(location.index, 1);
-  }
+		items[index].splice(index, 1);
+	}
 
-  return {
+	return {
 		init: function () {
 			curLayout = Session.current().layout;
-			// clear private notes
-			curLayout.forEach(function(column) {
-				privateItems[column.name] = [];
-			});
 			// fill public notes with the session service ones
-			var notes = Session.current().notes;
-      notes.forEach(function (note) {
-        if (!publicItems[note.column]) {
-          publicItems[note.column] = [];
-        }
-        publicItems[note.column].push(note);
-      });
+			privateNotes = [];
+			publicNotes = Session.current().notes || [];
 		},
 		layout: function() {
 			return curLayout;
-		},
-		getNoteId: function(column, index, scope) {
-			var items = scope === 'public' ? publicItems : privateItems;
-			return items[column][index].id;
 		},
 		getNoteText: function(noteId, scope) {
 			var note = getNote(noteId, scope);
@@ -101,52 +85,121 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 			}
 			return null;
 		},
-		add: function(column, text, score, scope) {
-			var items = scope === 'public' ? publicItems : privateItems;
-			// TODO check the parameters validity
-
-			if (scope === 'public') {
+		add: function(column, text, scope) {
+			switch (scope) {
+			case 'public':
 				return $http({
 					method: 'POST',
-          url: '/note/create',
+					url: '/note/create',
 					data: {
 						text: text,
-						score: score,
+						score: 1,
 						column: column,
-            retro: Session.current().id
+						retro: Session.current().id
 					}
 				}).then(function(result) {
-          if (!items[column]) {
-            // first note of the column
-            items[column] = [];
-          }
-					items[column].push({
-						text: text,
-						score: score,
-            column: column,
-						id: result.data.id
-					});
+					publicNotes.push(result.data);
 					return result.data.id;
 				});
-			}
-			return $q(function(resolve) {
-				var id = uuid4.generate();
-				items[column].push({
-					text: text,
-					score: score,
-					id: id
+				break;
+			case 'private':
+				return $q(function(resolve) {
+					var id = uuid4.generate();
+					privateNotes.push({
+						text: text,
+						column: column,
+						score: 1,
+						id: id
+					});
+					resolve(id);
 				});
-				resolve(id);
-			});
+				break;
+			default:
+				break;
+			}
+			throw new Error('Unknown scope');
+			return null;
 		},
 		incrementScore: function(noteId, scope) {
 			var note = getNote(noteId, scope);
-			note.score++;
+			if (!note) {
+				throw new Error('Unknown note');
+			}
+			switch (scope) {
+			case 'public':
+				return $http({
+					method: 'PUT',
+					url: '/note/' + noteId,
+					data: {
+						score: note.score + 1
+					}
+				}).then(function (result) {
+					note.score = result.data.score;
+				});
+			case 'private':
+				return $q(function (resolve) {
+					note.score++;
+					resolve(note.score);
+				});
+			default:
+				return null;
+				break;
+			}
 		},
 		decrementScore: function(noteId, scope) {
 			var note = getNote(noteId, scope);
-			if (note.score > 1) {
-				note.score--;
+			if (!note) {
+				throw new Error('Unknown note');
+			}
+			if (note.score <= 1) {
+				// ignore attempts to decrement a score equal to 1
+				return $q(function (resolve) {
+					resolve(note.score);
+				});
+			}
+			switch (scope) {
+			case 'public':
+				return $http({
+					method: 'PUT',
+					url: '/note/' + noteId,
+					data: {
+						score: note.score - 1
+					}
+				}).then(function (result) {
+					note.score = result.data.score;
+				});
+			case 'private':
+				return $q(function (resolve) {
+					note.score--;
+					resolve(note.score);
+				});
+			default:
+				break;
+			}
+		},
+		setText: function(noteId, scope, text) {
+			var note = getNote(noteId, scope);
+			if (!note) {
+				throw new Error('Unknown note');
+			}
+			switch (scope) {
+			case 'public':
+				return $http({
+					method: 'PUT',
+					url: '/note/' + noteId,
+					data: {
+						text: text
+					}
+				}).then(function (result) {
+					note.text = result.data.text;
+				});
+			case 'private':
+				return $q(function (resolve) {
+					note.text = text;
+					resolve(note.text);
+				});
+			default:
+				break;
 			}
 		},
 		delete: function(noteId, scope) {
@@ -154,25 +207,30 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 			note = getNote(noteId, scope);
 
 			if (!note) {
-        throw new Error('Trying to delete an unknown note');
+				throw new Error('Trying to delete an unknown note');
 			}
 
 			// TODO check the parameters validity
 			if (scope === 'public') {
 				$http({
 					method: 'DELETE',
-          url: '/note/' + note.id
+					url: '/note/' + note.id
 				}).then(function() {
-          removeNote(noteId, scope);
+					removeNote(noteId, scope);
 				});
 			} else {
-        removeNote(noteId, scope);
+				removeNote(noteId, scope);
 			}
 		},
-		list: function(column, scope) {
-			var items = scope === 'public' ? publicItems : privateItems;
-			// TODO check the parameters validity
-			return items[column];
+		list: function(scope) {
+			switch (scope) {
+			case 'private':
+				return privateNotes;
+			case 'public':
+				return publicNotes;
+			default:
+				throw new Error('Unknown scope');
+			}
 		}
-  };
+	};
 });
