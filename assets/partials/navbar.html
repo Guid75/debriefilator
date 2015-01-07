@@ -20,7 +20,7 @@
             <li><a href="#" ng-click="joinRetro()">Join an existing
                 session</a></li>
             <li role="presentation" class="divider"></li>
-            <li ng-repeat="retro in retros"><a href="#">{{ retro.name
+            <li ng-repeat="retro in retros"><a href="#" ng-click="joinRetroById(retro.id)">{{ retro.name
             || "&lt;unamed&gt;" }} ({{ retro.createdAt | date:'short' }})</a></li>
           </ul>
         </li>

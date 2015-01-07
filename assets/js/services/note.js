@@ -51,7 +51,7 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 	}
 
   return {
-		init: function() {
+		init: function () {
 			curLayout = Session.current().layout;
 			// clear private notes
 			curLayout.forEach(function(column) {
@@ -59,9 +59,12 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 			});
 			// fill public notes with the session service ones
 			var notes = Session.current().notes;
-			curLayout.forEach(function(column) {
-				publicItems[column.name] = [].concat(notes && notes[column.name] ? notes[column.name] : []);
-			});
+      notes.forEach(function (note) {
+        if (!publicItems[note.column]) {
+          publicItems[note.column] = [];
+        }
+        publicItems[note.column].push(note);
+      });
 		},
 		layout: function() {
 			return curLayout;

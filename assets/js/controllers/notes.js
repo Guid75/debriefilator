@@ -13,6 +13,9 @@ app.controller('NotesCtrl', function ($scope, $rootScope, Note) {
 	};
 
   $scope.notes = function(column) {
+    console.log('$scope.notes');
+    var l = Note.list(column, $scope.notesScope);
+    console.log(l);
 		return Note.list(column, $scope.notesScope);
 	};
 

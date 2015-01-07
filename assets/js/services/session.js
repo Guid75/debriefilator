@@ -29,18 +29,20 @@ app.factory('Session', function ($http) {
 			return this.current().username;
 		},
 
-		join: function (session) {
+		join: function (id) {
 			return $http({
 				method: 'GET',
-				url: '/api/session/' + session.sessionName
+				url: '/retro/' + id
 				// TODO add a pool of users for the joining site
 			}).then(function (result) {
-				this.initCurrent(session.sessionName, {
-					userName: session.userName,
-					name: result.data.session.name,
-					layout: result.data.session.layout,
-					notes: result.data.session.notes
+        var retro = result.data;
+				this.initCurrent(retro.id, {
+					userName: retro.userName,
+					name: retro.name,
+					layout: retro.layout,
+					notes: retro.notes
 				});
+        return session;
 			}.bind(this));
 		},
 

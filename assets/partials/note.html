@@ -6,7 +6,6 @@
   <div class="postit-toolbar">
 	  <span class="postit-delete" title="close" ng-click="deleteNote(column.name, note.id)">x</span>
   </div>
-  <!-- <div class="postit-editable" note contenteditable focus-me="{{note.focusMe}}" strip-br="true" ng-model="note.text"> -->
   <div class="postit-editable" note contenteditable
        focus-me="{{note.focusMe}}" strip-br="true" ng-model="text" ng-change="textChanged()">
   </div>
