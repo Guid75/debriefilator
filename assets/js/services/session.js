@@ -124,6 +124,8 @@ app.factory('Session', function ($http, $q, $rootScope) {
 				}
 			}).then(function (result) {
 				this.initCurrent(result.data.id, sessionCfg);
+				// delete all private notes
+				sessionStorage.removeItem('notes_' + result.data.id);
 				return currentSession;
 			}.bind(this));
 		},

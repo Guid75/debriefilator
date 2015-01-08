@@ -39,4 +39,8 @@ app.controller('NoteController', function ($scope, $timeout, Note) {
 			break;
 		}
 	};
+
+	$scope.isPrivate = function () {
+		return $scope.notesScope === 'private';
+	};
 });

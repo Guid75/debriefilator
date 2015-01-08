@@ -54,6 +54,11 @@ app.controller('NotesCtrl', function ($scope, $rootScope, Note) {
 		Note.setText(noteId, $scope.notesScope, text);
 	};
 
+	$scope.movePublic = function (noteId) {
+		Note.moveTo(noteId, 'public');
+//        $scope.$apply();
+	};
+
 	$scope.$on('dropEvent', function(evt, dragged, dropped) {
 		var dragData = dragged.split('/');
 		var dragId = dragData[0];

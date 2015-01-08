@@ -63,7 +63,7 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 		return (index >= 0 ? notes[getNoteIndex(noteId, scope)] : null);
 	}
 
-	// remove the note in internal structures
+	// remopushNoteInLocaleStorageve the note in internal structures
 	function removeNote(noteId, scope) {
 		var
 		items = scope === 'public' ? publicNotes : privateNotes,
@@ -82,11 +82,55 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 				retro: Session.current().id
 			}, function (data) {
 				// fill public notes with the session service ones
-				angular.copy([], privateNotes);
 				angular.copy(data || [], publicNotes);
 				resolve();
 			});
+		}).then(function() {
+			var
+			key = 'notes_' + Session.current().id,
+			notes = sessionStorage[key] ? angular.fromJson(sessionStorage[key]) : [];
+
+			angular.copy(notes, privateNotes);
 		});
+	}
+
+	function pushNoteInStorage(sessionId, note) {
+		var
+		key = 'notes_' + sessionId,
+		notes = sessionStorage[key] ? angular.fromJson(sessionStorage[key]) : [];
+
+		notes.push(note);
+		sessionStorage[key] = angular.toJson(notes);
+	}
+
+	function deleteNoteInStorage(noteId) {
+		var
+		key = 'notes_' + Session.current().id,
+		notes = sessionStorage[key] ? angular.fromJson(sessionStorage[key]) : [],
+		i;
+
+		for  (i = 0; i < notes.length; i++) {
+			if (notes[i].id === noteId) {
+				notes.splice(i, 1);
+				sessionStorage[key] = angular.toJson(notes);
+				return;
+			}
+		}
+	}
+
+	function updateNoteInStorage(note) {
+		var
+		key = 'notes_' + Session.current().id,
+		notes = sessionStorage[key] ? angular.fromJson(sessionStorage[key]) : [],
+		i;
+
+		for  (i = 0; i < notes.length; i++) {
+			if (notes[i].id === note.id) {
+				notes[i] = note;
+				sessionStorage[key] = angular.toJson(notes);
+				return;
+			}
+		}
 	}
 
 	return {
@@ -122,13 +166,17 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 				});
 			case 'private':
 				return $q(function(resolve) {
-					var id = uuid4.generate();
-					privateNotes.push({
+					var
+					id = uuid4.generate(),
+					note = {
 						text: config.text,
 						column: config.column,
 						score: config.score !== undefined ? config.score : 1,
 						id: id
-					});
+					};
+
+					privateNotes.push(note);
+					pushNoteInStorage(Session.current().id, note);
 					resolve(id);
 				});
 			default:
@@ -156,6 +204,7 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 			case 'private':
 				return $q(function (resolve) {
 					note.score++;
+					updateNoteInStorage(note);
 					resolve(note.score);
 				});
 			default:
@@ -170,6 +219,7 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 			if (note.score <= 1) {
 				// ignore attempts to decrement a score equal to 1
 				return $q(function (resolve) {
+					updateNoteInStorage(note);
 					resolve(note.score);
 				});
 			}
@@ -210,6 +260,7 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 			case 'private':
 				return $q(function (resolve) {
 					note.text = text;
+					updateNoteInStorage(note);
 					resolve(note.text);
 				});
 			default:
@@ -226,13 +277,35 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 
 			// TODO check the parameters validity
 			if (scope === 'public') {
-				$http({
+				return $http({
 					method: 'DELETE',
 					url: '/note/' + note.id
 				});
 			} else {
-				removeNote(noteId, scope);
+				return $q(function (resolve) {
+					removeNote(noteId, scope);
+					deleteNoteInStorage(noteId);
+					resolve();
+				});
 			}
+		},
+		moveTo: function (noteId, scope) {
+			var
+			oldScope = (scope === 'public' ? 'private' : 'public'),
+			note = getNote(noteId, oldScope);
+			if (!note) {
+				throw new Error('Trying to move an unknown (or wrong scope) note');
+			}
+
+			this.delete(noteId, oldScope)
+				.then(function () {
+					return this.add({
+						column: note.column,
+						text: note.text,
+						score: note.score,
+						scope: scope
+					});
+				}.bind(this));
 		},
 		list: function(scope) {
 			switch (scope) {
