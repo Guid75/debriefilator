@@ -106,16 +106,17 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 			var note = getNote(noteId, scope);
 			return note ? note.score : null;
 		},
-		add: function(column, text, scope) {
-			switch (scope) {
+		add: function (config) {
+			config = config || {};
+			switch (config.scope) {
 			case 'public':
 				return $http({
 					method: 'POST',
 					url: '/note/create',
 					data: {
-						text: text,
-						score: 1,
-						column: column,
+						text: config.text,
+						score: config.score !== undefined ? config.score : 1,
+						column: config.column,
 						retro: Session.current().id
 					}
 				});
@@ -123,9 +124,9 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 				return $q(function(resolve) {
 					var id = uuid4.generate();
 					privateNotes.push({
-						text: text,
-						column: column,
-						score: 1,
+						text: config.text,
+						column: config.column,
+						score: config.score !== undefined ? config.score : 1,
 						id: id
 					});
 					resolve(id);

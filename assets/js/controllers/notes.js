@@ -21,7 +21,11 @@ app.controller('NotesCtrl', function ($scope, $rootScope, Note) {
 	});
 
 	$scope.addNote = function(column) {
-		Note.add(column, 'Enter your remark here', $scope.notesScope);
+		Note.add({
+			column: column,
+			text: 'Enter your remark here',
+			scope: $scope.notesScope
+		});
 		// TOREDO : focus!
 			// .then(function(noteId) {
 			// 	$scope.notes.some(function(note) {
@@ -62,10 +66,13 @@ app.controller('NotesCtrl', function ($scope, $rootScope, Note) {
 			return;
 		}
 
-		Note.add(dropColumn,
-				 Note.getNoteText(dragId, dragScope),
-				 Note.getNoteScore(dragId, dragScope),
-				 dropScope);
+		Note.add({
+			column: dropColumn,
+			text: Note.getNoteText(dragId, dragScope),
+			score: Note.getNoteScore(dragId, dragScope),
+			scope: dropScope
+		});
+
 		Note.delete(dragId, dragScope);
         $scope.$apply();
     });

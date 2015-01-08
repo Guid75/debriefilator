@@ -54,7 +54,6 @@ app.factory('Session', function ($http, $q, $rootScope) {
 					item[field] = obj.data[field];
 				}
 				sessions[index] = item;
-				console.log('updated');
 			});
 			break;
 		case 'destroyed':
@@ -76,7 +75,6 @@ app.factory('Session', function ($http, $q, $rootScope) {
 
 	list().then(function (s) {
 		angular.copy(s, sessions);
-		console.log(sessions);
 	});
 
 	// Public API here
