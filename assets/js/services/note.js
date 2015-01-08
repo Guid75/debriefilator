@@ -13,22 +13,11 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 	publicNotes = [],
 	curLayout;
 
-	// $rootScope.$watch(function () {
-	// 	return publicNotes;
-	// }, function (newNotes, oldNotes) {
-	//   // get all modifications
-	// 	console.log('publicNotes modified');
-
-	//   // console.log(newItems);
-	//   // console.log(oldItems);
-	// }, true);
-
 	io.socket.on('note', function (obj) {
 		var
 		field,
 		item,
 		index;
-		console.log('notification on notes', obj);
 		switch (obj.verb) {
 		case 'created':
 			$rootScope.$apply(function () {
@@ -38,13 +27,11 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 		case 'updated':
 			$rootScope.$apply(function () {
 				index = getNoteIndex(obj.id, 'public');
-//				item = angular.copy(publicNotes[index]);
 				item = publicNotes[index];
 				for (field in obj.data) {
 					item[field] = obj.data[field];
 				}
 				publicNotes[index] = item;
-				console.log('updated');
 			});
 			break;
 		case 'destroyed':

@@ -15,7 +15,6 @@ app.controller('NoteController', function ($scope, $timeout, Note) {
 
 	$scope.$watch('note.text', function (newNote) {
 		$scope.text = newNote;
-		console.log('note changed', newNote);
 	});
 
 	function applyText() {
