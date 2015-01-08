@@ -13,6 +13,11 @@ app.controller('NoteController', function ($scope, $timeout, Note) {
 	// temp copy to allow buffered modification
 	$scope.text = $scope.note.text;
 
+	$scope.$watch('note.text', function (newNote) {
+		$scope.text = newNote;
+		console.log('note changed', newNote);
+	});
+
 	function applyText() {
 		return $scope.text;
 	}

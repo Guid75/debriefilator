@@ -19,8 +19,7 @@ app.factory('Session', function ($http) {
 			session = {
 				id: id,
 				name: sessionCfg.name,
-				layout: sessionCfg.layout,
-				notes: sessionCfg.notes
+				layout: sessionCfg.layout
 			};
 			session.username = sessionCfg.userName ? sessionCfg.userName :'John Doe';
 		},
@@ -39,8 +38,7 @@ app.factory('Session', function ($http) {
 				this.initCurrent(retro.id, {
 					userName: retro.userName,
 					name: retro.name,
-					layout: retro.layout,
-					notes: retro.notes
+					layout: retro.layout
 				});
 				return session;
 			}.bind(this));

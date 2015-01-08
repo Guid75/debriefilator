@@ -12,21 +12,26 @@ app.controller('NotesCtrl', function ($scope, $rootScope, Note) {
 		return { width: (100 / $scope.$parent.layout.length) + "%" };
 	};
 
-	$scope.notes = function() {
-		return Note.list($scope.notesScope);
-	};
+	$scope.notes = Note.list($scope.notesScope);
+	$scope.$watchCollection('notes', function (newL, oldL) {
+//		console.log('$watchCollection');
+	});
+	$scope.$watch('notes', function() {
+//		console.log('$watch');
+	});
 
 	$scope.addNote = function(column) {
-		Note.add(column, 'Enter your remark here', $scope.notesScope)
-			.then(function(noteId) {
-				$scope.notes().some(function(note) {
-					if (note.id === noteId) {
-						note.focusMe = 'true';
-						return true;
-					}
-					return false;
-				});
-			});
+		Note.add(column, 'Enter your remark here', $scope.notesScope);
+		// TOREDO : focus!
+			// .then(function(noteId) {
+			// 	$scope.notes.some(function(note) {
+			// 		if (note.id === noteId) {
+			// 			note.focusMe = 'true';
+			// 			return true;
+			// 		}
+			// 		return false;
+			// 	});
+			// });
 	};
 
 	$scope.deleteNote = function(noteId) {

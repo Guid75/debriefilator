@@ -9,22 +9,50 @@
  */
 app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 	var
-	privateNotes,
-	publicNotes,
+	privateNotes = [],
+	publicNotes = [],
 	curLayout;
 
 	// $rootScope.$watch(function () {
-	//   return privateItems;
-	// }, function (newItems, oldItems) {
+	// 	return publicNotes;
+	// }, function (newNotes, oldNotes) {
 	//   // get all modifications
-
+	// 	console.log('publicNotes modified');
 
 	//   // console.log(newItems);
 	//   // console.log(oldItems);
 	// }, true);
 
 	io.socket.on('note', function (obj) {
-//		console.log(obj);
+		var
+		field,
+		item,
+		index;
+		console.log('notification on notes', obj);
+		switch (obj.verb) {
+		case 'created':
+			$rootScope.$apply(function () {
+				publicNotes.push(obj.data);
+			});
+			break;
+		case 'updated':
+			$rootScope.$apply(function () {
+				index = getNoteIndex(obj.id, 'public');
+//				item = angular.copy(publicNotes[index]);
+				item = publicNotes[index];
+				for (field in obj.data) {
+					item[field] = obj.data[field];
+				}
+				publicNotes[index] = item;
+				console.log('updated');
+			});
+			break;
+		case 'destroyed':
+			$rootScope.$apply(function () {
+				removeNote(obj.id, 'public');
+			});
+			break;
+		}
 	});
 
 	function getNoteIndex(noteId, scope) {
@@ -58,32 +86,38 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 			throw new Error('Note not found');
 		}
 
-		items[index].splice(index, 1);
+		items.splice(index, 1);
+	}
+
+	function load() {
+		return $q(function (resolve) {
+			io.socket.get('/note', {
+				retro: Session.current().id
+			}, function (data) {
+				// fill public notes with the session service ones
+				angular.copy([], privateNotes);
+				angular.copy(data || [], publicNotes);
+				resolve();
+			});
+		});
 	}
 
 	return {
 		init: function () {
 			curLayout = Session.current().layout;
-			// fill public notes with the session service ones
-			privateNotes = [];
-			publicNotes = Session.current().notes || [];
+			return load();
 		},
+
 		layout: function() {
 			return curLayout;
 		},
 		getNoteText: function(noteId, scope) {
 			var note = getNote(noteId, scope);
-			if (note) {
-				return note.text;
-			}
-			return null;
+			return note ? note.text : null;
 		},
 		getNoteScore: function(noteId, scope) {
 			var note = getNote(noteId, scope);
-			if (note) {
-				return note.score;
-			}
-			return null;
+			return note ? note.score : null;
 		},
 		add: function(column, text, scope) {
 			switch (scope) {
@@ -97,11 +131,7 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 						column: column,
 						retro: Session.current().id
 					}
-				}).then(function(result) {
-					publicNotes.push(result.data);
-					return result.data.id;
 				});
-				break;
 			case 'private':
 				return $q(function(resolve) {
 					var id = uuid4.generate();
@@ -113,11 +143,10 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 					});
 					resolve(id);
 				});
-				break;
 			default:
 				break;
 			}
-			throw new Error('Unknown scope');
+			throw new Error('Unknown scope: ' + scope);
 			return null;
 		},
 		incrementScore: function(noteId, scope) {
@@ -143,7 +172,6 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 				});
 			default:
 				return null;
-				break;
 			}
 		},
 		decrementScore: function(noteId, scope) {
@@ -174,7 +202,7 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 					resolve(note.score);
 				});
 			default:
-				break;
+				return null;
 			}
 		},
 		setText: function(noteId, scope, text) {
@@ -190,8 +218,6 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 					data: {
 						text: text
 					}
-				}).then(function (result) {
-					note.text = result.data.text;
 				});
 			case 'private':
 				return $q(function (resolve) {
@@ -215,8 +241,6 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 				$http({
 					method: 'DELETE',
 					url: '/note/' + note.id
-				}).then(function() {
-					removeNote(noteId, scope);
 				});
 			} else {
 				removeNote(noteId, scope);

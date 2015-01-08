@@ -8,7 +8,7 @@
 	</div>
   </div>
   <div class="postits-board" drop drop-data="{{column.name}}/{{notesScope}}">
-	<div ng-repeat="note in notes() | filter:{ column: column.name } | filter:search"
+	<div ng-repeat="note in notes | filter:{ column: column.name } | filter:search"
 		 ng-include="'partials/note.html'" class="repeated-item" >
 	</div>
   </div>
