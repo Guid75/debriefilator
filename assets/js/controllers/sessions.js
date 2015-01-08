@@ -10,9 +10,7 @@
 app.controller('SessionsCtrl', function ($scope, $modal, $state, Session, Note) {
 	$scope.Session = Session;
 
-	Session.list().then(function(retros) {
-		$scope.retros = retros;
-	});
+	$scope.retros = Session.sessions;
 
 	$scope.newRetro = function() {
 		var modalInstance = $modal.open({

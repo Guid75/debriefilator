@@ -7,21 +7,91 @@
  * # session
  * Factory in the debriefilatorApp.
  */
-app.factory('Session', function ($http) {
-	var session;
+app.factory('Session', function ($http, $q, $rootScope) {
+	var
+	sessions = [],
+	currentSession;
+
+	function getSessionIndex(id) {
+		var
+		i;
+
+		for (i = 0; i < sessions.length; i++) {
+			if (sessions[i].id == id) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	function removeSession(id) {
+		var
+		index = getSessionIndex(id);
+
+		if (index < 0) {
+			throw new Error('Session not found');
+		}
+
+		sessions.splice(index, 1);
+	}
+
+	io.socket.on('retro', function (obj) {
+		var
+		field,
+		item,
+		index;
+		switch (obj.verb) {
+		case 'created':
+			$rootScope.$apply(function () {
+				sessions.push(obj.data);
+			});
+			break;
+		case 'updated':
+			$rootScope.$apply(function () {
+				index = getSessionIndex(obj.id);
+				item = sessions[index];
+				for (field in obj.data) {
+					item[field] = obj.data[field];
+				}
+				sessions[index] = item;
+				console.log('updated');
+			});
+			break;
+		case 'destroyed':
+			$rootScope.$apply(function () {
+				removeSession(obj.id);
+			});
+			break;
+		}
+	});
+
+
+	function list() {
+		return $q(function (resolve) {
+			io.socket.get('/retro', function (data) {
+				resolve(data);
+			});
+		});
+	}
+
+	list().then(function (s) {
+		angular.copy(s, sessions);
+		console.log(sessions);
+	});
+
 	// Public API here
 	return {
 		current: function () {
-			return session;
+			return currentSession;
 		},
 
 		initCurrent: function (id, sessionCfg) {
-			session = {
+			currentSession = {
 				id: id,
 				name: sessionCfg.name,
 				layout: sessionCfg.layout
 			};
-			session.username = sessionCfg.userName ? sessionCfg.userName :'John Doe';
+			currentSession.username = sessionCfg.userName ? sessionCfg.userName :'John Doe';
 		},
 
 		getUserName: function () {
@@ -40,18 +110,11 @@ app.factory('Session', function ($http) {
 					name: retro.name,
 					layout: retro.layout
 				});
-				return session;
+				return currentSession;
 			}.bind(this));
 		},
 
-		list: function () {
-			return $http({
-				method: 'GET',
-				url: '/retro'
-			}).then(function (result) {
-				return result.data;
-			});
-		},
+		sessions: sessions,
 
 		add: function (sessionCfg) {
 			return $http({
@@ -63,7 +126,7 @@ app.factory('Session', function ($http) {
 				}
 			}).then(function (result) {
 				this.initCurrent(result.data.id, sessionCfg);
-				return session;
+				return currentSession;
 			}.bind(this));
 		},
 
