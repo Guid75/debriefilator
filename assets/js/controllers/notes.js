@@ -25,17 +25,16 @@ app.controller('NotesCtrl', function ($scope, $rootScope, Note) {
 			column: column,
 			text: 'Enter your remark here',
 			scope: $scope.notesScope
+		}).then(function (noteId) {
+			// set focus on the new created note
+			$scope.notes.some(function(note) {
+				if (note.id === noteId) {
+					note.focusMe = 'true';
+					return true;
+				}
+				return false;
+			});
 		});
-		// TOREDO : focus!
-			// .then(function(noteId) {
-			// 	$scope.notes.some(function(note) {
-			// 		if (note.id === noteId) {
-			// 			note.focusMe = 'true';
-			// 			return true;
-			// 		}
-			// 		return false;
-			// 	});
-			// });
 	};
 
 	$scope.deleteNote = function(noteId) {

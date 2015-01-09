@@ -163,6 +163,8 @@ app.factory('Note', function ($rootScope, $q, $http, Session, uuid4) {
 						column: config.column,
 						retro: Session.current().id
 					}
+				}).then(function(res) {
+					return res.data.id;
 				});
 			case 'private':
 				return $q(function(resolve) {
