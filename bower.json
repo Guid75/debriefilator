@@ -22,5 +22,8 @@
   "name": "debriefilator",
   "version": "1.1.0",
   "author": "guillaume",
-  "private": true
+  "private": true,
+  "resolutions": {
+    "angular": ">0.9.0"
+  }
 }
