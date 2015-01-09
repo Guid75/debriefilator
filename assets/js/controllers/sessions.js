@@ -7,10 +7,14 @@
  * # SessionsCtrl
  * Controller of the debriefilatorApp
  */
-app.controller('SessionsCtrl', function ($scope, $modal, $state, Session, Note) {
+app.controller('SessionsCtrl', function ($rootScope, $scope, $modal, $state, Session, Note) {
 	$scope.Session = Session;
 
 	$scope.retros = Session.sessions;
+
+	$scope.nextStep = function () {
+		$rootScope.$broadcast('nextStep');
+	};
 
 	$scope.newRetro = function() {
 		var modalInstance = $modal.open({

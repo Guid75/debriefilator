@@ -21,4 +21,8 @@ app.controller('SessionCtrl', function ($scope, Note, Session) {
 	$scope.getDirectLink = function() {
 		return document.location.href;
 	};
+
+	$scope.$on('nextStep', function () {
+		$scope.nextStep();
+	});
 });
